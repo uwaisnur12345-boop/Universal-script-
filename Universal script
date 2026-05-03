@@ -1,0 +1,133 @@
+-- KEY SYSTEM
+local key = "123"
+
+local ScreenGui = Instance.new("ScreenGui")
+local KeyFrame = Instance.new("Frame")
+local TextBox = Instance.new("TextBox")
+local Submit = Instance.new("TextButton")
+
+ScreenGui.Parent = game.CoreGui
+
+KeyFrame.Size = UDim2.new(0, 250, 0, 120)
+KeyFrame.Position = UDim2.new(0.5, -125, 0.5, -60)
+KeyFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
+KeyFrame.Parent = ScreenGui
+
+TextBox.Size = UDim2.new(0.8, 0, 0.3, 0)
+TextBox.Position = UDim2.new(0.1, 0, 0.2, 0)
+TextBox.PlaceholderText = "Enter Key..."
+TextBox.Parent = KeyFrame
+
+Submit.Size = UDim2.new(0.6, 0, 0.3, 0)
+Submit.Position = UDim2.new(0.2, 0, 0.6, 0)
+Submit.Text = "Submit"
+Submit.Parent = KeyFrame
+
+-- MAIN GUI
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 200, 0, 220)
+MainFrame.Position = UDim2.new(0, 20, 0.3, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+MainFrame.Visible = false
+MainFrame.Parent = ScreenGui
+
+-- LOGO CUSTOM
+local Logo = Instance.new("ImageLabel")
+Logo.Size = UDim2.new(0, 50, 0, 50)
+Logo.Position = UDim2.new(0.5, -25, 0, 5)
+Logo.Image = "rbxassetid://YOUR_LOGO_ID" -- Ganti dengan ID logo kamu
+Logo.BackgroundTransparency = 1
+Logo.Parent = MainFrame
+
+-- BUTTONS
+local function createButton(text, posY)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.8, 0, 0.15, 0)
+    btn.Position = UDim2.new(0.1, 0, posY, 0)
+    btn.Text = text
+    btn.Parent = MainFrame
+    return btn
+end
+
+local FlyBtn = createButton("Fly", 0.3)
+local NoclipBtn = createButton("Noclip", 0.5)
+local JumpBtn = createButton("Infinite Jump", 0.7)
+local GravityBtn = createButton("Low Gravity", 0.9)
+
+-- KEY CHECK
+Submit.MouseButton1Click:Connect(function()
+    if TextBox.Text == key then
+        KeyFrame.Visible = false
+        MainFrame.Visible = true
+    else
+        TextBox.Text = "Wrong Key!"
+    end
+end)
+
+-- FEATURES
+local player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+
+-- FLY
+local flying = false
+FlyBtn.MouseButton1Click:Connect(function()
+    flying = not flying
+    local char = player.Character
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+
+    if flying then
+        local bv = Instance.new("BodyVelocity", hrp)
+        bv.Name = "FlyForce"
+        bv.MaxForce = Vector3.new(9e9,9e9,9e9)
+        bv.Velocity = Vector3.new(0,0,0)
+
+        game:GetService("RunService").RenderStepped:Connect(function()
+            if flying then
+                bv.Velocity = workspace.CurrentCamera.CFrame.LookVector * 50
+            end
+        end)
+    else
+        if hrp:FindFirstChild("FlyForce") then
+            hrp.FlyForce:Destroy()
+        end
+    end
+end)
+
+-- NOCLIP
+local noclip = false
+NoclipBtn.MouseButton1Click:Connect(function()
+    noclip = not noclip
+end)
+
+game:GetService("RunService").Stepped:Connect(function()
+    if noclip then
+        for _, v in pairs(player.Character:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- INFINITE JUMP
+local infJump = false
+JumpBtn.MouseButton1Click:Connect(function()
+    infJump = not infJump
+end)
+
+UIS.JumpRequest:Connect(function()
+    if infJump then
+        player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
+
+-- GRAVITY
+local lowGrav = false
+GravityBtn.MouseButton1Click:Connect(function()
+    lowGrav = not lowGrav
+    if lowGrav then
+        workspace.Gravity = 50
+    else
+        workspace.Gravity = 196
+    end
+end)
