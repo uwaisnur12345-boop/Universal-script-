@@ -1,0 +1,62 @@
+--// CONFIG
+local VALID_KEY = "Ejen ali"
+
+--// GUI
+local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+ScreenGui.Name = "EjenAliHub"
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 300, 0, 200)
+Frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+
+-- Logo
+local Logo = Instance.new("ImageLabel", Frame)
+Logo.Size = UDim2.new(0, 100, 0, 100)
+Logo.Position = UDim2.new(0.5, -50, 0, 10)
+Logo.Image = "rbxassetid://1234567890" -- Ganti dengan logo kamu
+
+-- TextBox Key
+local KeyBox = Instance.new("TextBox", Frame)
+KeyBox.PlaceholderText = "Masukkan Key..."
+KeyBox.Size = UDim2.new(0, 200, 0, 30)
+KeyBox.Position = UDim2.new(0.5, -100, 0.6, 0)
+
+-- Button
+local Button = Instance.new("TextButton", Frame)
+Button.Text = "Submit"
+Button.Size = UDim2.new(0, 200, 0, 30)
+Button.Position = UDim2.new(0.5, -100, 0.8, 0)
+
+-- Status
+local Status = Instance.new("TextLabel", Frame)
+Status.Size = UDim2.new(1, 0, 0, 20)
+Status.Position = UDim2.new(0, 0, 1, -20)
+Status.Text = ""
+Status.TextColor3 = Color3.new(1,1,1)
+Status.BackgroundTransparency = 1
+
+-- Spider Ability
+local function enableSpider()
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = char:WaitForChild("HumanoidRootPart")
+
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        humanoidRootPart.Velocity = Vector3.new(0, 100, 0)
+    end)
+
+    Status.Text = "Spider Ability Aktif!"
+end
+
+-- Key Check
+Button.MouseButton1Click:Connect(function()
+    if KeyBox.Text == VALID_KEY then
+        Status.Text = "Key Benar!"
+        wait(1)
+        Frame:Destroy()
+        enableSpider()
+    else
+        Status.Text = "Key Salah!"
+    end
+end)
