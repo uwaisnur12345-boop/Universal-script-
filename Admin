@@ -1,0 +1,16 @@
+local correctKey = "Ejen ali"
+
+local player = game.Players.LocalPlayer
+local gui = script.Parent
+local frame = gui:WaitForChild("Frame")
+local textbox = frame:WaitForChild("TextBox")
+local button = frame:WaitForChild("TextButton")
+
+button.MouseButton1Click:Connect(function()
+	if textbox.Text == correctKey then
+		frame.Visible = false
+		game.ReplicatedStorage:WaitForChild("AdminEvent"):FireServer()
+	else
+		textbox.Text = "Key Salah!"
+	end
+end)
