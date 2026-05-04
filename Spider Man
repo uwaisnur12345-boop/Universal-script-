@@ -1,0 +1,74 @@
+--// KEY SYSTEM
+local correctKey = "105"
+
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+
+-- LOGO
+local logo = Instance.new("TextLabel", frame)
+logo.Size = UDim2.new(1,0,0,40)
+logo.Text = "🕷 SPIDER SYSTEM"
+logo.TextColor3 = Color3.new(1,1,1)
+logo.BackgroundTransparency = 1
+
+-- INPUT BOX
+local keyBox = Instance.new("TextBox", frame)
+keyBox.Size = UDim2.new(0.8,0,0,30)
+keyBox.Position = UDim2.new(0.1,0,0.4,0)
+keyBox.PlaceholderText = "Enter Key..."
+
+-- BUTTON
+local button = Instance.new("TextButton", frame)
+button.Size = UDim2.new(0.6,0,0,30)
+button.Position = UDim2.new(0.2,0,0.7,0)
+button.Text = "Submit"
+
+-- FUNCTION ABILITY
+local function enableAbilities()
+    frame:Destroy()
+    
+    local char = player.Character or player.CharacterAdded:Wait()
+    local humanoid = char:WaitForChild("Humanoid")
+    
+    -- INVISIBLE
+    for _,v in pairs(char:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Transparency = 0.8
+        end
+    end
+
+    -- SPIDER CLIMB (wall walk simple)
+    humanoid:GetPropertyChangedSignal("FloorMaterial"):Connect(function()
+        if humanoid.FloorMaterial == Enum.Material.Air then
+            humanoid:ChangeState(Enum.HumanoidStateType.Climbing)
+        end
+    end)
+
+    -- WEB (press E)
+    local UIS = game:GetService("UserInputService")
+    UIS.InputBegan:Connect(function(input)
+        if input.KeyCode == Enum.KeyCode.E then
+            local web = Instance.new("Part", workspace)
+            web.Size = Vector3.new(1,1,10)
+            web.CFrame = char.Head.CFrame * CFrame.new(0,0,-5)
+            web.Anchored = true
+            web.BrickColor = BrickColor.new("Institutional white")
+            
+            game:GetService("Debris"):AddItem(web, 2)
+        end
+    end)
+end
+
+-- CHECK KEY
+button.MouseButton1Click:Connect(function()
+    if keyBox.Text == correctKey then
+        enableAbilities()
+    else
+        button.Text = "Wrong Key!"
+    end
+end)
